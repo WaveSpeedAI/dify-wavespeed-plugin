@@ -1,0 +1,80 @@
+identity:
+  name: generate_image
+  author: wavespeedai
+  label:
+    en_US: Generate Image
+    zh_Hans: 生成图片
+    pt_BR: Gerar Imagem
+    ja_JP: 画像生成
+description:
+  human:
+    en_US: Generate an image from a text prompt using WaveSpeed AI image models such as Seedream.
+    zh_Hans: 使用 WaveSpeed AI 图像模型（如 Seedream）根据文本提示生成图片。
+    pt_BR: Gere uma imagem a partir de um prompt de texto usando modelos de imagem da WaveSpeed AI, como o Seedream.
+    ja_JP: Seedream などの WaveSpeed AI 画像モデルを使用して、テキストプロンプトから画像を生成します。
+  llm: Generate an image from a text prompt using WaveSpeed AI image generation models. Returns the generated image and its URL.
+parameters:
+  - name: prompt
+    type: string
+    required: true
+    label:
+      en_US: Prompt
+      zh_Hans: 提示词
+      pt_BR: Prompt
+      ja_JP: プロンプト
+    human_description:
+      en_US: Text description of the image to generate.
+      zh_Hans: 要生成图片的文本描述。
+      pt_BR: Descrição em texto da imagem a ser gerada.
+      ja_JP: 生成する画像のテキスト説明。
+    llm_description: Text description of the image to generate.
+    form: llm
+  - name: model
+    type: string
+    required: false
+    default: bytedance/seedream-v5.0-pro
+    label:
+      en_US: Model
+      zh_Hans: 模型
+      pt_BR: Modelo
+      ja_JP: モデル
+    human_description:
+      en_US: WaveSpeed AI image model id, e.g. bytedance/seedream-v5.0-pro. See wavespeed.ai for the full model catalog.
+      zh_Hans: WaveSpeed AI 图像模型 id，例如 bytedance/seedream-v5.0-pro。完整模型列表见 wavespeed.ai。
+      pt_BR: Id do modelo de imagem da WaveSpeed AI, por exemplo bytedance/seedream-v5.0-pro. Consulte wavespeed.ai para o catálogo completo.
+      ja_JP: WaveSpeed AI 画像モデル id（例：bytedance/seedream-v5.0-pro）。モデル一覧は wavespeed.ai を参照してください。
+    llm_description: WaveSpeed AI image model id, e.g. bytedance/seedream-v5.0-pro. Leave the default unless the user asks for a specific model.
+    form: llm
+  - name: size
+    type: string
+    required: false
+    label:
+      en_US: Size
+      zh_Hans: 尺寸
+      pt_BR: Tamanho
+      ja_JP: サイズ
+    human_description:
+      en_US: Output resolution as width*height, e.g. 2048*2048. Leave empty for the model default.
+      zh_Hans: 输出分辨率，格式为 宽*高，例如 2048*2048。留空使用模型默认值。
+      pt_BR: Resolução de saída como largura*altura, por exemplo 2048*2048. Deixe vazio para o padrão do modelo.
+      ja_JP: 出力解像度（幅*高さ、例：2048*2048）。空欄の場合はモデルのデフォルトを使用します。
+    llm_description: Output resolution as width*height, e.g. 2048*2048. Omit to use the model default.
+    form: llm
+  - name: seed
+    type: number
+    required: false
+    label:
+      en_US: Seed
+      zh_Hans: 随机种子
+      pt_BR: Seed
+      ja_JP: シード
+    human_description:
+      en_US: Random seed for reproducible results. Leave empty for a random seed.
+      zh_Hans: 用于复现结果的随机种子。留空则随机。
+      pt_BR: Seed aleatória para resultados reproduzíveis. Deixe vazio para uma seed aleatória.
+      ja_JP: 結果を再現するための乱数シード。空欄の場合はランダムです。
+    llm_description: Random seed for reproducible results. Omit for a random seed.
+    form: llm
+extra:
+  python:
+    source: tools/generate_image.py

@@ -1,0 +1,8 @@
+[project]
+name = "wavespeed"
+version = "0.0.1"
+requires-python = ">=3.11"
+dependencies = [
+    "dify-plugin>=0.9.0,<0.10.0",
+    "requests~=2.32",
+]

@@ -1,0 +1,65 @@
+identity:
+  name: generate_video
+  author: wavespeedai
+  label:
+    en_US: Generate Video
+    zh_Hans: 生成视频
+    pt_BR: Gerar Vídeo
+    ja_JP: 動画生成
+description:
+  human:
+    en_US: Generate a video from a text prompt using WaveSpeed AI video models such as Seedance.
+    zh_Hans: 使用 WaveSpeed AI 视频模型（如 Seedance）根据文本提示生成视频。
+    pt_BR: Gere um vídeo a partir de um prompt de texto usando modelos de vídeo da WaveSpeed AI, como o Seedance.
+    ja_JP: Seedance などの WaveSpeed AI 動画モデルを使用して、テキストプロンプトから動画を生成します。
+  llm: Generate a video from a text prompt using WaveSpeed AI video generation models. Returns the generated video URL.
+parameters:
+  - name: prompt
+    type: string
+    required: true
+    label:
+      en_US: Prompt
+      zh_Hans: 提示词
+      pt_BR: Prompt
+      ja_JP: プロンプト
+    human_description:
+      en_US: Text description of the video to generate.
+      zh_Hans: 要生成视频的文本描述。
+      pt_BR: Descrição em texto do vídeo a ser gerado.
+      ja_JP: 生成する動画のテキスト説明。
+    llm_description: Text description of the video to generate.
+    form: llm
+  - name: model
+    type: string
+    required: false
+    default: bytedance/seedance-2.5/text-to-video
+    label:
+      en_US: Model
+      zh_Hans: 模型
+      pt_BR: Modelo
+      ja_JP: モデル
+    human_description:
+      en_US: WaveSpeed AI video model id, e.g. bytedance/seedance-2.5/text-to-video. See wavespeed.ai for the full model catalog.
+      zh_Hans: WaveSpeed AI 视频模型 id，例如 bytedance/seedance-2.5/text-to-video。完整模型列表见 wavespeed.ai。
+      pt_BR: Id do modelo de vídeo da WaveSpeed AI, por exemplo bytedance/seedance-2.5/text-to-video. Consulte wavespeed.ai para o catálogo completo.
+      ja_JP: WaveSpeed AI 動画モデル id（例：bytedance/seedance-2.5/text-to-video）。モデル一覧は wavespeed.ai を参照してください。
+    llm_description: WaveSpeed AI video model id, e.g. bytedance/seedance-2.5/text-to-video. Leave the default unless the user asks for a specific model.
+    form: llm
+  - name: duration
+    type: number
+    required: false
+    label:
+      en_US: Duration (seconds)
+      zh_Hans: 时长（秒）
+      pt_BR: Duração (segundos)
+      ja_JP: 長さ（秒）
+    human_description:
+      en_US: Video duration in seconds. Supported values depend on the model. Leave empty for the model default.
+      zh_Hans: 视频时长（秒），支持的取值取决于模型。留空使用模型默认值。
+      pt_BR: Duração do vídeo em segundos. Os valores suportados dependem do modelo. Deixe vazio para o padrão do modelo.
+      ja_JP: 動画の長さ（秒）。サポートされる値はモデルによって異なります。空欄の場合はモデルのデフォルトを使用します。
+    llm_description: Video duration in seconds. Supported values depend on the model. Omit for the model default.
+    form: llm
+extra:
+  python:
+    source: tools/generate_video.py

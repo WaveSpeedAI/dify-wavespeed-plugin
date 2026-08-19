@@ -1,0 +1,43 @@
+version: 0.0.1
+type: plugin
+author: wavespeedai
+name: wavespeed
+label:
+  en_US: WaveSpeed
+  ja_JP: WaveSpeed
+  zh_Hans: WaveSpeed
+  pt_BR: WaveSpeed
+description:
+  en_US: Generate images and videos with WaveSpeed AI models such as Seedream and Seedance.
+  ja_JP: Seedream や Seedance などの WaveSpeed AI モデルで画像と動画を生成します。
+  zh_Hans: 使用 WaveSpeed AI 的模型（如 Seedream 和 Seedance）生成图片和视频。
+  pt_BR: Gere imagens e vídeos com modelos da WaveSpeed AI, como Seedream e Seedance.
+icon: icon.svg
+icon_dark: icon-dark.svg
+resource:
+  memory: 268435456
+  permission: {}
+network:
+  domains:
+    - api.wavespeed.ai
+plugins:
+  tools:
+    - provider/wavespeed.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+  minimum_dify_version: 1.0.0
+created_at: 2026-08-19T14:37:06.507109905Z
+privacy: PRIVACY.md
+repo: https://github.com/WaveSpeedAI/dify-wavespeed-plugin
+contact: market@wavespeed.ai
+verified: false
+tags:
+  - image
+  - videos
