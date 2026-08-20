@@ -11,12 +11,17 @@ Every response carries the platform envelope {"code": 200, "message": ...,
 message so users see actionable text instead of bare HTTP statuses.
 """
 
+import os
+import platform
+import re
 import time
+from pathlib import Path
 from typing import Any, Optional
 
 import requests
 
 BASE_URL = "https://api.wavespeed.ai"
+DEFAULT_CLIENT_NAME = "dify-wavespeed-plugin"
 POLL_INTERVAL_SECONDS = 1.0
 POLL_TIMEOUT_SECONDS = 600
 REQUEST_TIMEOUT_SECONDS = 30
@@ -28,12 +33,47 @@ class WaveSpeedError(Exception):
     """Raised when the WaveSpeed API reports an error."""
 
 
+def _plugin_version() -> str:
+    """Read the plugin version from manifest.yaml."""
+    try:
+        manifest = Path(__file__).resolve().parent.parent / "manifest.yaml"
+        match = re.search(
+            r"^version:\s*(\S+)", manifest.read_text(encoding="utf-8"), re.MULTILINE
+        )
+        if match:
+            return match.group(1)
+    except OSError:
+        pass
+    return "unknown"
+
+
+def _client_os() -> str:
+    """OS identifier using the desktop client's vocabulary (darwin/linux/win32)."""
+    system = platform.system().lower()
+    return "win32" if system == "windows" else (system or "unknown")
+
+
+def _attribution_headers() -> dict[str, str]:
+    """Channel-attribution headers sent with every API request.
+
+    WAVESPEED_CLIENT_NAME overrides the default name so wrapper channels can
+    brand themselves without code changes.
+    """
+    return {
+        "X-Client-Name": os.environ.get("WAVESPEED_CLIENT_NAME") or DEFAULT_CLIENT_NAME,
+        "X-Client-Version": _plugin_version(),
+        "X-Client-OS": _client_os(),
+    }
+
+
 class WaveSpeedClient:
     def __init__(self, api_key: str):
         if not api_key:
             raise WaveSpeedError("WaveSpeed API key is required.")
         self.session = requests.Session()
-        self.session.headers.update({"Authorization": f"Bearer {api_key}"})
+        self.session.headers.update(
+            {"Authorization": f"Bearer {api_key}", **_attribution_headers()}
+        )
 
     def _unwrap(self, response: requests.Response, context: str) -> Any:
         try:
