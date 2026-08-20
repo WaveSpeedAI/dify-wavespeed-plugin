@@ -15,6 +15,6 @@ This plugin connects Dify to the WaveSpeed AI API (https://api.wavespeed.ai) to 
 
 ## Contact
 
-Questions about privacy: market@wavespeed.ai
+Questions about privacy: support@wavespeed.ai
 
 Full WaveSpeed privacy policy: https://wavespeed.ai/privacy

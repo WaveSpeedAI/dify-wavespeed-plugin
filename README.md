@@ -4,7 +4,7 @@
 **Version**: 0.0.1
 **Type**: tool
 **Source**: https://github.com/WaveSpeedAI/dify-wavespeed-plugin
-**Contact**: market@wavespeed.ai
+**Contact**: support@wavespeed.ai
 
 Generate images and videos in Dify with [WaveSpeed AI](https://wavespeed.ai) — a fast inference platform serving state-of-the-art media generation models such as ByteDance Seedream (image) and Seedance (video), plus hundreds of other models.
 
@@ -57,6 +57,6 @@ See [PRIVACY.md](PRIVACY.md). The plugin stores nothing; prompts and parameters 
 
 ## Support
 
-- Email: market@wavespeed.ai
+- Email: support@wavespeed.ai
 - Website: https://wavespeed.ai
 - Source repository: https://github.com/WaveSpeedAI/dify-wavespeed-plugin
