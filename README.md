@@ -1,7 +1,7 @@
 # WaveSpeed
 
 **Author**: WaveSpeedAI
-**Version**: 0.0.1
+**Version**: 0.0.2
 **Type**: tool
 **Source**: https://github.com/WaveSpeedAI/dify-wavespeed-plugin
 **Contact**: support@wavespeed.ai
