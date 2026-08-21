@@ -60,3 +60,8 @@ See [PRIVACY.md](PRIVACY.md). The plugin stores nothing; prompts and parameters 
 - Email: support@wavespeed.ai
 - Website: https://wavespeed.ai
 - Source repository: https://github.com/WaveSpeedAI/dify-wavespeed-plugin
+
+---
+
+**[WaveSpeed AI](https://wavespeed.ai/)** — AI image & video generation platform.
+Try it in the browser: **[Image generator](https://wavespeed.ai/image-generator)** · **[Video generator](https://wavespeed.ai/video-generator)**
