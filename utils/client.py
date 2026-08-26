@@ -26,7 +26,7 @@ POLL_INTERVAL_SECONDS = 1.0
 POLL_TIMEOUT_SECONDS = 600
 REQUEST_TIMEOUT_SECONDS = 30
 
-TERMINAL_FAILURE_STATUSES = ("failed", "cancelled", "timeout")
+TERMINAL_FAILURE_STATUSES = ("failed", "cancelled", "timeout", "deleted")
 
 
 class WaveSpeedError(Exception):
@@ -123,7 +123,7 @@ class WaveSpeedClient:
         """Poll until the prediction reaches a terminal status.
 
         Returns the prediction data on success. Raises WaveSpeedError on
-        failed/cancelled/timeout statuses or when the wait limit is hit.
+        failed/cancelled/timeout/deleted statuses or when the wait limit is hit.
         """
         deadline = time.monotonic() + (timeout or POLL_TIMEOUT_SECONDS)
         while True:
