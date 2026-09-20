@@ -5,12 +5,17 @@ on:
     types: [published]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3
+        with:
+          persist-credentials: false
 
       - name: Download CLI tool
         run: |
@@ -57,7 +62,7 @@ jobs:
           tree || ls -R
 
       - name: Checkout target repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3
         with:
           repository: ${{steps.get_basic_info.outputs.author}}/dify-plugins
           path: dify-plugins
