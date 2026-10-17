@@ -181,3 +181,7 @@ GUIDE.md
 
 # Tests
 tests/
+
+# Tool caches
+.ruff_cache/
+.pytest_cache/
