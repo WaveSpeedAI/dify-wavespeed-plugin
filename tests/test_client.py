@@ -145,3 +145,33 @@ def test_submit_401_no_warning(server):
 
 def test_submit_ok(server):
     assert WaveSpeedClient("k").submit("m/x", {}) == "t1"
+
+
+def test_wait_has_no_default_cap_for_long_running_task(server, monkeypatch):
+    """A task that stays processing far longer than the old 600s cap completes."""
+    polls = 5000  # x 1s poll interval = ~83 min of simulated time
+    server.get_script = [{"status": "processing"}] * polls + [
+        {"status": "completed", "outputs": ["u"]}
+    ]
+    # Simulated clock: sleep advances it; real sleep is skipped.
+    clock = {"t": 1000.0}
+    monkeypatch.setattr(client_mod.time, "monotonic", lambda: clock["t"])
+    monkeypatch.setattr(
+        client_mod.time, "sleep", lambda s: clock.__setitem__("t", clock["t"] + 1.0)
+    )
+    # get_script pops until one item is left, so it serves each entry once.
+    data = WaveSpeedClient("k").wait("t1")
+    assert data["status"] == "completed"
+    assert clock["t"] - 1000.0 > 3600
+    assert server.gets == polls + 1
+
+
+def test_wait_explicit_timeout_still_honored(server, monkeypatch):
+    server.get_script = [{"status": "processing"}]
+    clock = {"t": 0.0}
+    monkeypatch.setattr(client_mod.time, "monotonic", lambda: clock["t"])
+    monkeypatch.setattr(
+        client_mod.time, "sleep", lambda s: clock.__setitem__("t", clock["t"] + 1.0)
+    )
+    with pytest.raises(WaveSpeedError, match="still 'processing' after 5s"):
+        WaveSpeedClient("k").wait("t1", timeout=5)

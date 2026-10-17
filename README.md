@@ -49,7 +49,7 @@ Returns the generated video URL as a link and text message, plus a JSON payload 
 
 Use either tool in an Agent, Chatflow, or Workflow application. In a workflow, add the tool node, wire the `prompt` from an upstream variable, and optionally set `model`, `size`/`duration`, or `seed`. Browse the full model catalog at [wavespeed.ai/models](https://wavespeed.ai/models) — any compatible image or video model id can be passed in `model`.
 
-Generation is synchronous from Dify's point of view: the tool submits the task and polls the WaveSpeed API (every second, up to 10 minutes) until the media is ready.
+Generation is synchronous from Dify's point of view: the tool submits the task and polls the WaveSpeed API (every second) until the task reaches a final status, with no overall time limit (long tasks can run for hours).
 
 ## Privacy
 

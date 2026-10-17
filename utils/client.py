@@ -23,7 +23,6 @@ import requests
 BASE_URL = "https://api.wavespeed.ai"
 DEFAULT_CLIENT_NAME = "dify-wavespeed-plugin"
 POLL_INTERVAL_SECONDS = 1.0
-POLL_TIMEOUT_SECONDS = 600
 REQUEST_TIMEOUT_SECONDS = 30
 
 POLL_MAX_RETRIES = 5
@@ -171,9 +170,11 @@ class WaveSpeedClient:
         """Poll until the prediction reaches a terminal status.
 
         Returns the prediction data on success. Raises WaveSpeedError on
-        failed/cancelled/timeout/deleted statuses or when the wait limit is hit.
+        failed/cancelled/timeout/deleted statuses, or when an explicit ``timeout``
+        (seconds) is passed and exceeded. By default there is no overall cap:
+        tasks can run for hours, so we wait until a terminal status.
         """
-        deadline = time.monotonic() + (timeout or POLL_TIMEOUT_SECONDS)
+        deadline = None if timeout is None else time.monotonic() + timeout
         while True:
             data = self._poll_result(task_id)
             status = (data or {}).get("status")
@@ -185,9 +186,9 @@ class WaveSpeedClient:
                     f"Prediction {status}{': ' + error if error else ''}"
                     f" (task id: {task_id})"
                 )
-            if time.monotonic() > deadline:
+            if deadline is not None and time.monotonic() > deadline:
                 raise WaveSpeedError(
-                    f"Prediction still '{status}' after {int(timeout or POLL_TIMEOUT_SECONDS)}s"
+                    f"Prediction still '{status}' after {int(timeout)}s"
                     f" (task id: {task_id}). The task keeps running server-side;"
                     " check it later on the WaveSpeed dashboard."
                 )
