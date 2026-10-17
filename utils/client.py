@@ -23,7 +23,11 @@ import requests
 BASE_URL = "https://api.wavespeed.ai"
 DEFAULT_CLIENT_NAME = "dify-wavespeed-plugin"
 POLL_INTERVAL_SECONDS = 1.0
-REQUEST_TIMEOUT_SECONDS = 30
+# Per-request timeouts by request type (no overall cap on the wait itself).
+# Result queries / read-only GETs are fast; a submit timeout is an ambiguous
+# outcome, so it gets more headroom.
+GET_TIMEOUT_SECONDS = 30
+SUBMIT_TIMEOUT_SECONDS = 60
 
 POLL_MAX_RETRIES = 5
 TRANSIENT_HTTP_STATUSES = (429, 500, 502, 503, 504)
@@ -100,7 +104,7 @@ class WaveSpeedClient:
 
     def _get(self, path: str, context: str) -> Any:
         response = self.session.get(
-            f"{BASE_URL}{path}", timeout=REQUEST_TIMEOUT_SECONDS
+            f"{BASE_URL}{path}", timeout=GET_TIMEOUT_SECONDS
         )
         return self._unwrap(response, context)
 
@@ -121,7 +125,7 @@ class WaveSpeedClient:
             response = self.session.post(
                 f"{BASE_URL}/api/v3/{model_id}",
                 json=inputs,
-                timeout=REQUEST_TIMEOUT_SECONDS,
+                timeout=SUBMIT_TIMEOUT_SECONDS,
             )
         except requests.RequestException as e:
             raise WaveSpeedError(
@@ -151,7 +155,7 @@ class WaveSpeedClient:
         for attempt in range(POLL_MAX_RETRIES + 1):
             try:
                 response = self.session.get(
-                    f"{BASE_URL}{path}", timeout=REQUEST_TIMEOUT_SECONDS
+                    f"{BASE_URL}{path}", timeout=GET_TIMEOUT_SECONDS
                 )
                 if response.status_code not in TRANSIENT_HTTP_STATUSES:
                     return self._unwrap(response, context)

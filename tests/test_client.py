@@ -175,3 +175,27 @@ def test_wait_explicit_timeout_still_honored(server, monkeypatch):
     )
     with pytest.raises(WaveSpeedError, match="still 'processing' after 5s"):
         WaveSpeedClient("k").wait("t1", timeout=5)
+
+
+def test_request_timeouts_by_type(server, monkeypatch):
+    """Submit POST gets 60s; result polls and other GETs get 30s."""
+    server.get_script = [{"status": "completed", "outputs": ["u"]}]
+    c = WaveSpeedClient("k")
+    seen = {"post": [], "get": []}
+    real_post, real_get = c.session.post, c.session.get
+
+    def post(*a, **kw):
+        seen["post"].append(kw.get("timeout"))
+        return real_post(*a, **kw)
+
+    def get(*a, **kw):
+        seen["get"].append(kw.get("timeout"))
+        return real_get(*a, **kw)
+
+    monkeypatch.setattr(c.session, "post", post)
+    monkeypatch.setattr(c.session, "get", get)
+    c.submit("m/x", {})
+    c.wait("t1")
+    c.check_credentials()
+    assert seen["post"] == [60]
+    assert seen["get"] == [30, 30]
