@@ -103,9 +103,7 @@ class WaveSpeedClient:
         return body.get("data")
 
     def _get(self, path: str, context: str) -> Any:
-        response = self.session.get(
-            f"{BASE_URL}{path}", timeout=GET_TIMEOUT_SECONDS
-        )
+        response = self.session.get(f"{BASE_URL}{path}", timeout=GET_TIMEOUT_SECONDS)
         return self._unwrap(response, context)
 
     def check_credentials(self) -> None:
