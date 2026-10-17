@@ -178,3 +178,6 @@ Thumbs.db
 
 # Dev-only files
 GUIDE.md
+
+# Tests
+tests/

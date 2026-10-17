@@ -26,6 +26,9 @@ POLL_INTERVAL_SECONDS = 1.0
 POLL_TIMEOUT_SECONDS = 600
 REQUEST_TIMEOUT_SECONDS = 30
 
+POLL_MAX_RETRIES = 5
+TRANSIENT_HTTP_STATUSES = (429, 500, 502, 503, 504)
+
 TERMINAL_FAILURE_STATUSES = ("failed", "cancelled", "timeout", "deleted")
 
 
@@ -108,16 +111,61 @@ class WaveSpeedClient:
 
     def submit(self, model_id: str, inputs: dict[str, Any]) -> str:
         """Submit a prediction and return its task id."""
-        response = self.session.post(
-            f"{BASE_URL}/api/v3/{model_id}",
-            json=inputs,
-            timeout=REQUEST_TIMEOUT_SECONDS,
+        # Submit is single-shot and never retried: on an ambiguous failure the
+        # task may already exist (and be billed).
+        ambiguous = (
+            "The task may already exist. Do not retry blindly; check your"
+            " recent predictions first."
         )
-        data = self._unwrap(response, f"Submitting to model '{model_id}'")
+        context = f"Submitting to model '{model_id}'"
+        try:
+            response = self.session.post(
+                f"{BASE_URL}/api/v3/{model_id}",
+                json=inputs,
+                timeout=REQUEST_TIMEOUT_SECONDS,
+            )
+        except requests.RequestException as e:
+            raise WaveSpeedError(
+                f"{context} failed with no confirmed response"
+                f" ({type(e).__name__}). {ambiguous}"
+            ) from e
+        try:
+            data = self._unwrap(response, context)
+        except WaveSpeedError as e:
+            if response.status_code >= 500:
+                raise WaveSpeedError(f"{e} {ambiguous}") from e
+            raise
         task_id = (data or {}).get("id")
         if not task_id:
             raise WaveSpeedError("The API did not return a prediction id.")
         return task_id
+
+    def _poll_result(self, task_id: str) -> Any:
+        """GET the prediction result, tolerating transient errors.
+
+        Retries 429/500/502/503/504 and network errors up to POLL_MAX_RETRIES
+        times (delay 1s * (n + 1)). Polling is read-only: never re-submits.
+        """
+        path = f"/api/v3/predictions/{task_id}/result"
+        context = "Fetching prediction result"
+        last = ""
+        for attempt in range(POLL_MAX_RETRIES + 1):
+            try:
+                response = self.session.get(
+                    f"{BASE_URL}{path}", timeout=REQUEST_TIMEOUT_SECONDS
+                )
+                if response.status_code not in TRANSIENT_HTTP_STATUSES:
+                    return self._unwrap(response, context)
+                last = f"HTTP {response.status_code}"
+            except requests.RequestException as e:
+                last = type(e).__name__
+            if attempt < POLL_MAX_RETRIES:
+                time.sleep(POLL_INTERVAL_SECONDS * (attempt + 1))
+        raise WaveSpeedError(
+            f"Could not fetch the prediction result after {POLL_MAX_RETRIES}"
+            f" retries ({last}) (task id: {task_id}). The task may still be"
+            " running; check it later on the WaveSpeed dashboard."
+        )
 
     def wait(self, task_id: str, timeout: Optional[float] = None) -> dict[str, Any]:
         """Poll until the prediction reaches a terminal status.
@@ -127,9 +175,7 @@ class WaveSpeedClient:
         """
         deadline = time.monotonic() + (timeout or POLL_TIMEOUT_SECONDS)
         while True:
-            data = self._get(
-                f"/api/v3/predictions/{task_id}/result", "Fetching prediction result"
-            )
+            data = self._poll_result(task_id)
             status = (data or {}).get("status")
             if status == "completed":
                 return data
