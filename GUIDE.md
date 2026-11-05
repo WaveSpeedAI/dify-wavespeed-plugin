@@ -83,17 +83,7 @@ meta:
 </details>
 
 <details>
-<summary><b>2. Implementation Examples</b></summary>
-
-Study these examples to understand plugin implementation:
-
-- [OpenAI](https://github.com/langgenius/dify-plugin-sdks/tree/main/python/examples/openai) - Model provider
-- [Google Search](https://github.com/langgenius/dify-plugin-sdks/tree/main/python/examples/google) - Tool provider
-- [Neko](https://github.com/langgenius/dify-plugin-sdks/tree/main/python/examples/neko) - Endpoint group
-</details>
-
-<details>
-<summary><b>3. Testing & Debugging</b></summary>
+<summary><b>2. Testing & Debugging</b></summary>
 
 1. Copy `.env.example` to `.env` and configure:
    ```
@@ -111,7 +101,7 @@ Study these examples to understand plugin implementation:
 </details>
 
 <details>
-<summary><b>4. Publishing</b></summary>
+<summary><b>3. Publishing</b></summary>
 
 #### Manual Packaging
 ```bash
